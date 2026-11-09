@@ -2,7 +2,7 @@
 # Установка opera-proxy + LuCI + русский перевод из релиза GitHub.
 # Сам определяет менеджер пакетов (opkg -> .ipk, apk -> .apk) и архитектуру роутера.
 #
-#   uclient-fetch -q -O - https://raw.githubusercontent.com/PaWill68/openwrt-opera-proxy/master/scripts/install.sh | sh
+#   uclient-fetch -q -O - https://raw.githubusercontent.com/nikolasoft2004-hue/openwrt-opera-proxy/master/scripts/install.sh | sh
 #
 # Параметры (переменные окружения):
 #   TAG=v1.30.0-2    конкретный релиз (по умолчанию: последний)
@@ -13,7 +13,7 @@
 # Пример:  uclient-fetch -q -O - <URL> | TAG=v1.30.0-2 WITH_LUCI=0 sh
 set -u
 
-REPO="${REPO:-PaWill68/openwrt-opera-proxy}"
+REPO="${REPO:-nikolasoft2004-hue/openwrt-opera-proxy}"
 TAG="${TAG:-latest}"
 LANGS="${LANGS-ru}"
 WITH_LUCI="${WITH_LUCI:-1}"
