@@ -129,7 +129,7 @@ jobs:
           ref: ${{ needs.prepare.outputs.upstream_tag }}
           path: upstream
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version-file: upstream/go.mod
           cache: false
