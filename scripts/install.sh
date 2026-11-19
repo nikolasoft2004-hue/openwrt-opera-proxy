@@ -17,7 +17,7 @@ REPO="${REPO:-nikolasoft2004-hue/openwrt-opera-proxy}"
 TAG="${TAG:-latest}"
 LANGS="${LANGS-ru}"
 WITH_LUCI="${WITH_LUCI:-1}"
-WORKDIR=/tmp/opera-proxy-install
+WORKDIR=/tmp/
 
 say()  { printf '%s\n' "$*"; }
 warn() { printf 'Внимание: %s\n' "$*" >&2; }
