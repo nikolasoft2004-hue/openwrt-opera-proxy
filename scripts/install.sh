@@ -5,12 +5,12 @@
 #   uclient-fetch -q -O - https://raw.githubusercontent.com/nikolasoft2004-hue/openwrt-opera-proxy/master/scripts/install.sh | sh
 #
 # Параметры (переменные окружения):
-#   TAG=v1.30.0-2    конкретный релиз (по умолчанию: последний)
+#   TAG=v1.32.0-2    конкретный релиз (по умолчанию: последний)
 #   LANGS="ru"       языки перевода через пробел; LANGS="" -- без перевода
 #   WITH_LUCI=0      только бинарник и сервис, без веб-интерфейса
 #   REPO=владелец/репозиторий   откуда брать релизы
 #   PKG_ARCH=<арх>   принудительно указать архитектуру пакетов (см. opkg print-architecture)
-# Пример:  uclient-fetch -q -O - <URL> | TAG=v1.30.0-2 WITH_LUCI=0 sh
+# Пример:  uclient-fetch -q -O - <URL> | TAG=v1.32.0-2 WITH_LUCI=0 sh
 set -u
 
 REPO="${REPO:-nikolasoft2004-hue/openwrt-opera-proxy}"
