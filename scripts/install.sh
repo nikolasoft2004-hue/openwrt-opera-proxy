@@ -78,9 +78,25 @@ if [ "$TAG" = latest ]; then
 else
     API="https://api.github.com/repos/$REPO/releases/tags/$TAG"
 fi
+# Для скачивания release assets нужен curl: uclient-fetch не позволяет надёжно
+# передать Accept: application/octet-stream и пройти редирект на хранилище GitHub.
+command -v curl >/dev/null 2>&1 || die "для скачивания файлов релиза через GitHub API необходим curl"
+command -v jsonfilter >/dev/null 2>&1 || die "не найден jsonfilter (установите пакет jsonfilter)"
+command -v sha256sum >/dev/null 2>&1 || die "не найдена sha256sum (нужна для проверки целостности пакетов)"
+
+rm -rf "$WORKDIR"
+mkdir -p "$WORKDIR" || die "не удалось создать $WORKDIR"
+RELEASE_JSON="$WORKDIR/release.json"
 JSON=$(fetch "$API") || die "не удалось получить описание релиза: $API"
+printf '%s\n' "$JSON" > "$RELEASE_JSON"
+
 URLS=$(printf '%s\n' "$JSON" | grep -o '"browser_download_url": *"[^"]*"' | sed 's/.*"\(https:[^"]*\)"$/\1/' | grep "\\.$EXT\$")
 [ -n "$URLS" ] || die "в релизе нет файлов .$EXT (проверьте REPO/TAG; возможно, исчерпан лимит запросов GitHub API -- повторите позже)"
+
+# Получить поле конкретного asset по точному имени файла из ответа GitHub API.
+asset_field() {
+    jsonfilter -i "$RELEASE_JSON" -e "@.assets[@.name=\"$1\"].$2" 2>/dev/null | head -n 1
+}
 
 # pick РЕГУЛЯРНОЕ_ВЫРАЖЕНИЕ -- первый URL, имя файла которого подходит
 pick() { printf '%s\n' "$URLS" | grep -E "/$1\$" | head -n 1; }
@@ -110,13 +126,34 @@ if [ "$WITH_LUCI" = 1 ]; then
 fi
 
 # --- загрузка и установка -----------------------------------------------------------
-rm -rf "$WORKDIR"; mkdir -p "$WORKDIR" || die "не удалось создать $WORKDIR"
 FILES=""
 for u in $LIST; do
-    f="$WORKDIR/${u##*/}"
-    say "Загрузка: ${u##*/}"
-    fetch "$u" "$f" || die "не удалось скачать $u"
-    [ -s "$f" ] || die "скачан пустой файл: ${u##*/}"
+    name="${u##*/}"
+    f="$WORKDIR/$name"
+    asset_id=$(asset_field "$name" id)
+    digest=$(asset_field "$name" digest)
+
+    [ -n "$asset_id" ] || die "не удалось определить asset ID для $name"
+    say "Загрузка через GitHub API: $name"
+    curl -fsSL --retry 2 --connect-timeout 15 \
+        -H "Accept: application/octet-stream" \
+        -o "$f" \
+        "https://api.github.com/repos/$REPO/releases/assets/$asset_id" \
+        || die "не удалось скачать asset $name (ID: $asset_id)"
+    [ -s "$f" ] || die "скачан пустой файл: $name"
+
+    if [ -n "$digest" ]; then
+        case "$digest" in
+            sha256:*) expected="${digest#sha256:}" ;;
+            *) die "неподдерживаемый формат digest для $name: $digest" ;;
+        esac
+        actual=$(sha256sum "$f" | awk '{print $1}')
+        [ "$actual" = "$expected" ] || die "SHA-256 не совпадает для $name (ожидалось $expected, получено $actual)"
+        say "SHA-256 проверен: $name"
+    else
+        warn "GitHub не предоставил digest для $name; контрольная сумма не проверена"
+    fi
+
     FILES="$FILES $f"
 done
 
