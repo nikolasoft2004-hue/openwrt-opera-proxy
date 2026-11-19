@@ -126,7 +126,8 @@ if [ "$WITH_LUCI" = 1 ]; then
 fi
 
 # --- загрузка и установка -----------------------------------------------------------
-FILES=""
+CORE_FILES=""
+LANG_FILES=""
 for u in $LIST; do
     name="${u##*/}"
     f="$WORKDIR/$name"
@@ -154,19 +155,33 @@ for u in $LIST; do
         warn "GitHub не предоставил digest для $name; контрольная сумма не проверена"
     fi
 
-    FILES="$FILES $f"
+    case "$name" in
+        luci-i18n-opera-proxy-*) LANG_FILES="$LANG_FILES $f" ;;
+        *) CORE_FILES="$CORE_FILES $f" ;;
+    esac
 done
 
-say "Установка ($PM)..."
+say "Установка основных пакетов ($PM)..."
 if [ "$PM" = opkg ]; then
     opkg update >/dev/null 2>&1 || warn "opkg update не удался -- зависимости могут не установиться"
     # shellcheck disable=SC2086
-    opkg install $FILES || die "opkg install завершился с ошибкой"
+    opkg install $CORE_FILES || die "не удалось установить opera-proxy и LuCI"
+    for f in $LANG_FILES; do
+        # Перевод необязателен: ошибка его пакета не должна отменять основную установку.
+        opkg install "$f" || warn "не удалось установить пакет перевода $(basename "$f"); пропускаю"
+    done
 else
     apk update >/dev/null 2>&1 || warn "apk update не удался -- зависимости могут не установиться"
     # Пакеты не подписаны ключом репозитория.
     # shellcheck disable=SC2086
-    apk add --allow-untrusted $FILES || die "apk add завершился с ошибкой"
+    apk add --allow-untrusted $CORE_FILES || die "не удалось установить opera-proxy и LuCI"
+    for f in $LANG_FILES; do
+        if apk add --allow-untrusted "$f"; then
+            say "Установлен перевод: $(basename "$f")"
+        else
+            warn "apk отклонил пакет перевода $(basename "$f"); opera-proxy и LuCI уже установлены, перевод пропущен"
+        fi
+    done
 fi
 
 rm -rf "$WORKDIR"
