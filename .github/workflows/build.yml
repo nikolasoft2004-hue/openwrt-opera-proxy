@@ -116,9 +116,6 @@ jobs:
         # arch -- архитектура пакетов OpenWrt (должна совпадать с `opkg print-architecture`).
         # Чтобы добавить архитектуру, добавьте строку здесь и такое же значение в matrix job `package`.
         include:
-          - { arch: mipsel_24kc,              goarch: mipsle, gomips: softfloat, goarm: "",  upx: "true"  }
-          - { arch: mips_24kc,                goarch: mips,   gomips: softfloat, goarm: "",  upx: "true"  }
-          - { arch: arm_cortex-a7_neon-vfpv4, goarch: arm,    gomips: "",        goarm: "7", upx: "true"  }
           - { arch: aarch64_cortex-a53,       goarch: arm64,  gomips: "",        goarm: "",  upx: "false" }
           - { arch: x86_64,                   goarch: amd64,  gomips: "",        goarm: "",  upx: "false" }
     steps:
@@ -212,9 +209,6 @@ jobs:
           - { ver: "24.10", sdk: "openwrt-24.10" }
           - { ver: "25.12", sdk: "openwrt-25.12" }
         arch:
-          - mipsel_24kc
-          - mips_24kc
-          - arm_cortex-a7_neon-vfpv4
           - aarch64_cortex-a53
           - x86_64
     steps:
