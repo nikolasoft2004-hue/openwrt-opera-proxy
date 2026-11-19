@@ -44,7 +44,7 @@
 
 | Переменная | Значение по умолчанию | Что делает |
 |---|---|---|
-| `TAG` | `latest` | конкретный релиз, например `TAG=v1.31.0-1` |
+| `TAG` | `latest` | конкретный релиз, например `TAG=v1.32.0-1` |
 | `LANGS` | `ru` | языки перевода через пробел; `LANGS=""` — без перевода |
 | `WITH_LUCI` | `1` | `WITH_LUCI=0` — только бинарник и сервис, без веб-интерфейса |
 | `REPO` | `nikolasoft2004-hue/openwrt-opera-proxy` | откуда брать релизы |
@@ -62,18 +62,18 @@
 
     root@router:~# uclient-fetch -q -O - https://raw.githubusercontent.com/nikolasoft2004-hue/openwrt-opera-proxy/master/scripts/install.sh | sh
     Менеджер пакетов: opkg (.ipk), архитектура пакетов: aarch64_cortex-a53
-    Загрузка: opera-proxy_1.31.0-r1_aarch64_cortex-a53.ipk
-    Загрузка: luci-app-opera-proxy_1.31.0-r1_all.ipk
-    Загрузка: luci-i18n-opera-proxy-ru_1.31.0-r1_all.ipk
+    Загрузка: opera-proxy_1.32.0-r1_aarch64_cortex-a53.ipk
+    Загрузка: luci-app-opera-proxy_1.32.0-r1_all.ipk
+    Загрузка: luci-i18n-opera-proxy-ru_1.32.0-r1_all.ipk
     Установка (opkg)...
-    Installing opera-proxy (1.31.0-r1) to root...
-    Installing luci-app-opera-proxy (1.31.0-r1) to root...
-    Installing luci-i18n-opera-proxy-ru (1.31.0-r1) to root...
+    Installing opera-proxy (1.32.0-r1) to root...
+    Installing luci-app-opera-proxy (1.32.0-r1) to root...
+    Installing luci-i18n-opera-proxy-ru (1.32.0-r1) to root...
     Configuring opera-proxy.
     Configuring luci-app-opera-proxy.
     Configuring luci-i18n-opera-proxy-ru.
     
-    Готово: opera-proxy v1.31.0 (aarch64_cortex-a53) установлен.
+    Готово: opera-proxy v1.32.0 (aarch64_cortex-a53) установлен.
     Веб-интерфейс: LuCI -> Службы -> Opera Proxy (при необходимости обновите страницу через Ctrl+F5).
     Статус службы: /etc/init.d/opera-proxy status
     root@router:~# 
@@ -130,8 +130,8 @@ OpenWrt 25.12 (пакеты не подписаны ключом репозит�
 
 Тег `vX.Y.Z` (X.Y.Z — версия upstream) или `vX.Y.Z-N` (N — ревизия пакета, если меняли только наш код):
 
-    git tag v1.31.0
-    git push origin v1.31.0
+    git tag v1.32.0
+    git push origin v1.32.0
 
 Либо вручную: **Actions → Build packages → Run workflow** (можно указать версию upstream, ревизию, режим UPX и
 нужно ли публиковать релиз; без публикации пакеты остаются артефактами запуска).
